@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Game</title>
+
+    <style>
+      * {
+        font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        background-color: #414141;
+        color: #d3d3d3;
+        width: 100vw;
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+      }
+      #screen {
+        margin-top: 10px;
+        border: 10px solid #ccc;
+        image-rendering: pixelated;
+        image-rendering: crisp-edges;
+        image-rendering: -moz-crisp-edges;
+        width: 400px;
+        height: 400px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Jogão do Brunão</h1>
+    <canvas id="screen" width="10" height="10"></canvas>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+      const socket = io();
+      const screen = document.getElementById('screen');
+
+      document.addEventListener('keydown', (e) => {
+        socket.emit('player:move', e.code);
+      });
+
+      socket.on('state', (players) => renderScreen(players, socket.id));
+
+      const renderScreen = (players, currentPlayerId) => {
+        const context = screen.getContext('2d');
+        context.fillStyle = '#414141';
+        context.clearRect(0, 0, 10, 10);
+
+        players.forEach((player) => {
+          context.fillStyle = player.id === currentPlayerId ? 'blue' : '#d3d3d3';
+          context.fillRect(player.x, player.y, 1, 1);
+        });
+      };
+    </script>
+  </body>
+</html>
